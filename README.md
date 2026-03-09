@@ -60,6 +60,7 @@ This creates:
 - A Data Collection Endpoint (DCE)
 - Custom log tables (`TraceTcpDrop_CL`, `TraceTcp_CL`)
 - A Data Collection Rule (DCR) with KQL transforms to parse nested JSON
+- A system-assigned managed identity on the VM (required for AMA authentication)
 - Installs Azure Monitor Agent on the VM
 - Associates the DCE and DCR with the VM
 
@@ -68,6 +69,8 @@ This creates:
 ```bash
 ./scripts/deploy-dashboard.sh
 ```
+
+Each deployment creates a per-VM dashboard (UID and title derived from `VM_NAME`) with queries scoped to that VM's data. You can deploy multiple VMs into the same resource group and each will get its own dashboard without collisions. Override the defaults with `DASHBOARD_TITLE` and `DASHBOARD_UID` in `.env`.
 
 ## Configuration
 
@@ -83,6 +86,8 @@ All configuration is in `.env` (see `.env.example`):
 | `DCE_NAME` | No | Data Collection Endpoint name (default: `ig-tcp-dce`) |
 | `DCR_NAME` | No | Data Collection Rule name (default: `ig-tcp-dcr`) |
 | `GRAFANA_NAME` | Yes | Azure Managed Grafana instance name |
+| `DASHBOARD_TITLE` | No | Dashboard display name (default: `Inspektor Gadget — TCP Monitoring (<VM_NAME>)`) |
+| `DASHBOARD_UID` | No | Grafana dashboard UID (default: `ig-tcp-<VM_NAME>`) |
 
 ## Repository structure
 

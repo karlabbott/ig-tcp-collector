@@ -180,7 +180,14 @@ DCR_ID=$(az monitor data-collection rule show \
     --query id -o tsv)
 echo "    DCR ID: $DCR_ID"
 
-# ─── Step 4: Install Azure Monitor Agent on the VM ──────────────────────────
+# ─── Step 4: Ensure VM has a system-assigned managed identity ────────────────
+echo "==> Assigning system-managed identity to ${VM_NAME}..."
+az vm identity assign \
+    --resource-group "$AZURE_RESOURCE_GROUP" \
+    --name "$VM_NAME" \
+    -o none 2>/dev/null || echo "    Identity may already be assigned, continuing..."
+
+# ─── Step 5: Install Azure Monitor Agent on the VM ──────────────────────────
 echo "==> Installing Azure Monitor Agent extension on ${VM_NAME}..."
 az vm extension set \
     --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -190,7 +197,7 @@ az vm extension set \
     --enable-auto-upgrade true \
     -o none 2>/dev/null || echo "    AMA may already be installed, continuing..."
 
-# ─── Step 5: Associate DCE and DCR with VM ──────────────────────────────────
+# ─── Step 6: Associate DCE and DCR with VM ──────────────────────────────────
 echo "==> Associating DCE with VM..."
 az monitor data-collection rule association create \
     --name "configurationAccessEndpoint" \
