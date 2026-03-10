@@ -9,7 +9,9 @@
 #   __LAW_RESOURCE_ID__  → Log Analytics workspace resource ID
 #   __DASHBOARD_UID__    → Unique dashboard identifier (derived from VM_NAME)
 #   __DASHBOARD_TITLE__  → Dashboard display name
-#   __HOST_FILTER__      → KQL filter clause scoping data to the target VM
+#
+# Host filtering is handled by a Grafana template variable (VM dropdown)
+# that uses _ResourceId with the ${VM:singlequote} formatter.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -34,15 +36,14 @@ LAW_RESOURCE_ID="/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_
 
 DASHBOARD_UID="${DASHBOARD_UID:-ig-tcp-${VM_NAME}}"
 DASHBOARD_TITLE="${DASHBOARD_TITLE:-Inspektor Gadget — TCP Monitoring (${VM_NAME})}"
-HOST_FILTER="| where _ResourceId has \\\"${VM_NAME}\\\""
 
 # Substitute placeholders in dashboard template
 RENDERED=$(mktemp /tmp/dashboard-XXXXXX.json)
-export LAW_RESOURCE_ID DASHBOARD_UID DASHBOARD_TITLE HOST_FILTER
+export LAW_RESOURCE_ID DASHBOARD_UID DASHBOARD_TITLE
 python3 -c "
 import os, sys
 t = sys.stdin.read()
-for key in ['LAW_RESOURCE_ID', 'DASHBOARD_UID', 'DASHBOARD_TITLE', 'HOST_FILTER']:
+for key in ['LAW_RESOURCE_ID', 'DASHBOARD_UID', 'DASHBOARD_TITLE']:
     t = t.replace('__' + key + '__', os.environ[key])
 print(t, end='')
 " < "$TEMPLATE" > "$RENDERED"
