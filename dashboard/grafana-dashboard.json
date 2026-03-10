@@ -4,7 +4,11 @@
     "uid": "__DASHBOARD_UID__",
     "title": "__DASHBOARD_TITLE__",
     "description": "TCP drops and connection events from Inspektor Gadget trace_tcpdrop and trace_tcp",
-    "tags": ["inspektor-gadget", "tcp", "networking"],
+    "tags": [
+      "inspektor-gadget",
+      "tcp",
+      "networking"
+    ],
     "timezone": "browser",
     "schemaVersion": 39,
     "version": 1,
@@ -16,13 +20,46 @@
     "fiscalYearStartMonth": 0,
     "liveNow": false,
     "templating": {
-      "list": []
+      "list": [
+        {
+          "current": {},
+          "datasource": {
+            "type": "grafana-azure-monitor-datasource",
+            "uid": "azure-monitor-oob"
+          },
+          "definition": "",
+          "hide": 0,
+          "includeAll": true,
+          "multi": false,
+          "name": "VM",
+          "options": [],
+          "query": {
+            "azureLogAnalytics": {
+              "query": "TraceTcp_CL | distinct _ResourceId",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
+            },
+            "queryType": "Azure Log Analytics",
+            "refId": "A"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "type": "query",
+          "label": "Virtual Machine"
+        }
+      ]
     },
     "annotations": {
       "list": [
         {
           "builtIn": 1,
-          "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
           "enable": true,
           "hide": true,
           "iconColor": "rgba(0, 211, 255, 1)",
@@ -35,7 +72,12 @@
       {
         "type": "row",
         "title": "TCP Drops (trace_tcpdrop)",
-        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
         "collapsed": false,
         "id": 100
       },
@@ -43,15 +85,25 @@
         "id": 1,
         "title": "Total TCP Drops",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 1
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -60,18 +112,35 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null },
-                { "color": "yellow", "value": 10 },
-                { "color": "red", "value": 100 }
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 100
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -83,15 +152,25 @@
         "id": 2,
         "title": "Drop Rate (per minute)",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 1
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize DropsPerMin=count() / (datetime_diff('minute', max(TimeGenerated), min(TimeGenerated)) + 1)",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize DropsPerMin=count() / (datetime_diff('minute', max(TimeGenerated), min(TimeGenerated)) + 1)",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -100,19 +179,36 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null },
-                { "color": "yellow", "value": 1 },
-                { "color": "red", "value": 10 }
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 10
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "unit": "short",
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -124,15 +220,25 @@
         "id": 3,
         "title": "Unique Drop Reasons",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 1
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Reasons=dcount(Reason)",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Reasons=dcount(Reason)",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -141,16 +247,27 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "blue", "value": null }
+                {
+                  "color": "blue",
+                  "value": null
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -162,15 +279,25 @@
         "id": 4,
         "title": "Unique Processes Dropping",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 1
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Processes=dcount(Comm)",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Processes=dcount(Comm)",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -179,16 +306,27 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "purple", "value": null }
+                {
+                  "color": "purple",
+                  "value": null
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -200,21 +338,33 @@
         "id": 5,
         "title": "TCP Drops Over Time",
         "type": "timeseries",
-        "gridPos": { "h": 8, "w": 16, "x": 0, "y": 5 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 16,
+          "x": 0,
+          "y": 5
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Drops=count() by bin(TimeGenerated, $__interval), Reason\n| order by TimeGenerated asc",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Drops=count() by bin(TimeGenerated, $__interval), Reason\n| order by TimeGenerated asc",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "custom": {
               "axisBorderShow": false,
               "axisCenteredZero": false,
@@ -225,107 +375,190 @@
               "lineWidth": 1,
               "pointSize": 5,
               "showPoints": "auto",
-              "stacking": { "group": "A", "mode": "normal" }
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              }
             },
             "mappings": [],
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null }
+                {
+                  "color": "green",
+                  "value": null
+                }
               ]
             }
           },
           "overrides": []
         },
         "options": {
-          "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom" },
-          "tooltip": { "mode": "multi", "sort": "desc" }
+          "legend": {
+            "calcs": [
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "desc"
+          }
         }
       },
       {
         "id": 6,
         "title": "Drops by Reason",
         "type": "piechart",
-        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 5 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 5
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by Reason\n| order by Count desc\n| take 10",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by Reason\n| order by Count desc\n| take 10",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": [
+              "value",
+              "percent"
+            ]
+          },
           "pieType": "donut",
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Count$/" },
-          "tooltip": { "mode": "single" }
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Count$/"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
         }
       },
       {
         "id": 7,
         "title": "Drops by TCP State",
         "type": "piechart",
-        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 13 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 13
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by State\n| order by Count desc",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by State\n| order by Count desc",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": [
+              "value",
+              "percent"
+            ]
+          },
           "pieType": "donut",
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Count$/" },
-          "tooltip": { "mode": "single" }
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Count$/"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
         }
       },
       {
         "id": 8,
         "title": "Top Source IPs (Drops)",
         "type": "bargauge",
-        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 13 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 13
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend SrcIP = extract(@'^([^:]+)', 1, Src)\n| summarize Drops=count() by SrcIP\n| order by Drops desc\n| take 10",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend SrcIP = extract(@'^([^:]+)', 1, Src)\n| summarize Drops=count() by SrcIP\n| order by Drops desc\n| take 10",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null },
-                { "color": "red", "value": 50 }
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 50
+                }
               ]
             },
             "mappings": []
@@ -333,7 +566,11 @@
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Drops$/" },
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Drops$/"
+          },
           "orientation": "horizontal",
           "displayMode": "gradient",
           "showUnfilled": true,
@@ -345,26 +582,44 @@
         "id": 9,
         "title": "Top Destination IPs (Drops)",
         "type": "bargauge",
-        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 13 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 13
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Drops=count() by DstIP\n| order by Drops desc\n| take 10",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Drops=count() by DstIP\n| order by Drops desc\n| take 10",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null },
-                { "color": "red", "value": 50 }
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 50
+                }
               ]
             },
             "mappings": []
@@ -372,7 +627,11 @@
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Drops$/" },
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Drops$/"
+          },
           "orientation": "horizontal",
           "displayMode": "gradient",
           "showUnfilled": true,
@@ -384,41 +643,87 @@
         "id": 10,
         "title": "TCP Drop Events",
         "type": "table",
-        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 21 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 21
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, Src, Dst, Comm, Pid, State, TcpFlags, Reason\n| order by TimeGenerated desc\n| take 100",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcpDrop_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, Src, Dst, Comm, Pid, State, TcpFlags, Reason\n| order by TimeGenerated desc\n| take 100",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
-          "defaults": { "mappings": [] },
+          "defaults": {
+            "mappings": []
+          },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "TimeGenerated" },
-              "properties": [{ "id": "custom.width", "value": 180 }]
+              "matcher": {
+                "id": "byName",
+                "options": "TimeGenerated"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 180
+                }
+              ]
             },
             {
-              "matcher": { "id": "byName", "options": "Reason" },
-              "properties": [{ "id": "custom.width", "value": 300 }]
+              "matcher": {
+                "id": "byName",
+                "options": "Reason"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 300
+                }
+              ]
             }
           ]
         },
         "options": {
           "showHeader": true,
-          "sortBy": [{ "displayName": "TimeGenerated", "desc": true }],
-          "footer": { "show": true, "reducer": ["count"], "fields": ["Src"] }
+          "sortBy": [
+            {
+              "displayName": "TimeGenerated",
+              "desc": true
+            }
+          ],
+          "footer": {
+            "show": true,
+            "reducer": [
+              "count"
+            ],
+            "fields": [
+              "Src"
+            ]
+          }
         }
       },
       {
         "type": "row",
         "title": "TCP Events (trace_tcp)",
-        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 29
+        },
         "collapsed": false,
         "id": 200
       },
@@ -426,15 +731,25 @@
         "id": 11,
         "title": "Total TCP Events",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 30 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 30
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -443,16 +758,27 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "blue", "value": null }
+                {
+                  "color": "blue",
+                  "value": null
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -464,15 +790,25 @@
         "id": 12,
         "title": "Connects",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 30 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 30
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Count=count()",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Count=count()",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -481,16 +817,27 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null }
+                {
+                  "color": "green",
+                  "value": null
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -502,15 +849,25 @@
         "id": 13,
         "title": "Accepts",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 30 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 30
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'accept'\n| summarize Count=count()",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'accept'\n| summarize Count=count()",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -519,16 +876,27 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "orange", "value": null }
+                {
+                  "color": "orange",
+                  "value": null
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -540,15 +908,25 @@
         "id": 14,
         "title": "Closes",
         "type": "stat",
-        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 30 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 30
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'close'\n| summarize Count=count()",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'close'\n| summarize Count=count()",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
@@ -557,16 +935,27 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "red", "value": null }
+                {
+                  "color": "red",
+                  "value": null
+                }
               ]
             },
-            "color": { "mode": "thresholds" },
+            "color": {
+              "mode": "thresholds"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
           "orientation": "auto",
           "textMode": "auto",
           "colorMode": "value",
@@ -578,21 +967,33 @@
         "id": 15,
         "title": "TCP Events Over Time",
         "type": "timeseries",
-        "gridPos": { "h": 8, "w": 16, "x": 0, "y": 34 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 16,
+          "x": 0,
+          "y": 34
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Events=count() by bin(TimeGenerated, $__interval), TcpEventType\n| order by TimeGenerated asc",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Events=count() by bin(TimeGenerated, $__interval), TcpEventType\n| order by TimeGenerated asc",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "custom": {
               "axisBorderShow": false,
               "axisCenteredZero": false,
@@ -603,76 +1004,132 @@
               "lineWidth": 2,
               "pointSize": 5,
               "showPoints": "auto",
-              "stacking": { "group": "A", "mode": "none" }
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              }
             },
             "mappings": [],
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null }
+                {
+                  "color": "green",
+                  "value": null
+                }
               ]
             }
           },
           "overrides": []
         },
         "options": {
-          "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom" },
-          "tooltip": { "mode": "multi", "sort": "desc" }
+          "legend": {
+            "calcs": [
+              "sum",
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "desc"
+          }
         }
       },
       {
         "id": 16,
         "title": "Events by Type",
         "type": "piechart",
-        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 34 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 34
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by TcpEventType\n| order by Count desc",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by TcpEventType\n| order by Count desc",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "mappings": []
           },
           "overrides": []
         },
         "options": {
-          "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": [
+              "value",
+              "percent"
+            ]
+          },
           "pieType": "donut",
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Count$/" },
-          "tooltip": { "mode": "single" }
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Count$/"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
         }
       },
       {
         "id": 17,
         "title": "Top Processes (by connection count)",
         "type": "bargauge",
-        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 42 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 42
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Connections=count() by Comm\n| order by Connections desc\n| take 10",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Connections=count() by Comm\n| order by Connections desc\n| take 10",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null }
+                {
+                  "color": "green",
+                  "value": null
+                }
               ]
             },
             "mappings": []
@@ -680,7 +1137,11 @@
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Connections$/" },
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Connections$/"
+          },
           "orientation": "horizontal",
           "displayMode": "gradient",
           "showUnfilled": true,
@@ -692,25 +1153,40 @@
         "id": 18,
         "title": "Top Destinations",
         "type": "bargauge",
-        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 42 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 42
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Connections=count() by DstIP\n| order by Connections desc\n| take 10",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Connections=count() by DstIP\n| order by Connections desc\n| take 10",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null }
+                {
+                  "color": "green",
+                  "value": null
+                }
               ]
             },
             "mappings": []
@@ -718,7 +1194,11 @@
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Connections$/" },
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Connections$/"
+          },
           "orientation": "horizontal",
           "displayMode": "gradient",
           "showUnfilled": true,
@@ -730,25 +1210,40 @@
         "id": 19,
         "title": "Top Destination Ports",
         "type": "bargauge",
-        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 42 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 42
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstPort = extract(@':([0-9]+)$', 1, Dst)\n| summarize Connections=count() by DstPort\n| order by Connections desc\n| take 10",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstPort = extract(@':([0-9]+)$', 1, Dst)\n| summarize Connections=count() by DstPort\n| order by Connections desc\n| take 10",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "color": { "mode": "palette-classic" },
+            "color": {
+              "mode": "palette-classic"
+            },
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                { "color": "green", "value": null }
+                {
+                  "color": "green",
+                  "value": null
+                }
               ]
             },
             "mappings": []
@@ -756,7 +1251,11 @@
           "overrides": []
         },
         "options": {
-          "reduceOptions": { "values": true, "calcs": [], "fields": "/^Connections$/" },
+          "reduceOptions": {
+            "values": true,
+            "calcs": [],
+            "fields": "/^Connections$/"
+          },
           "orientation": "horizontal",
           "displayMode": "gradient",
           "showUnfilled": true,
@@ -768,35 +1267,88 @@
         "id": 20,
         "title": "TCP Events Log",
         "type": "table",
-        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 50 },
-        "datasource": { "type": "grafana-azure-monitor-datasource", "uid": "azure-monitor-oob" },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 50
+        },
+        "datasource": {
+          "type": "grafana-azure-monitor-datasource",
+          "uid": "azure-monitor-oob"
+        },
         "targets": [
           {
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, TcpEventType, Src, Dst, Comm, Pid, Uid\n| order by TimeGenerated desc\n| take 100",
-              "resources": ["__LAW_RESOURCE_ID__"]
+              "query": "TraceTcp_CL\n| where \"$__all\" == \"${VM}\" or _ResourceId =~ \"${VM}\"\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, TcpEventType, Src, Dst, Comm, Pid, Uid\n| order by TimeGenerated desc\n| take 100",
+              "resources": [
+                "__LAW_RESOURCE_ID__"
+              ]
             }
           }
         ],
         "fieldConfig": {
-          "defaults": { "mappings": [] },
+          "defaults": {
+            "mappings": []
+          },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "TimeGenerated" },
-              "properties": [{ "id": "custom.width", "value": 180 }]
+              "matcher": {
+                "id": "byName",
+                "options": "TimeGenerated"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 180
+                }
+              ]
             },
             {
-              "matcher": { "id": "byName", "options": "TcpEventType" },
+              "matcher": {
+                "id": "byName",
+                "options": "TcpEventType"
+              },
               "properties": [
-                { "id": "custom.width", "value": 100 },
+                {
+                  "id": "custom.width",
+                  "value": 100
+                },
                 {
                   "id": "mappings",
                   "value": [
-                    { "options": { "connect": { "color": "green", "index": 0, "text": "connect" } }, "type": "value" },
-                    { "options": { "accept": { "color": "orange", "index": 1, "text": "accept" } }, "type": "value" },
-                    { "options": { "close": { "color": "red", "index": 2, "text": "close" } }, "type": "value" }
+                    {
+                      "options": {
+                        "connect": {
+                          "color": "green",
+                          "index": 0,
+                          "text": "connect"
+                        }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "accept": {
+                          "color": "orange",
+                          "index": 1,
+                          "text": "accept"
+                        }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "close": {
+                          "color": "red",
+                          "index": 2,
+                          "text": "close"
+                        }
+                      },
+                      "type": "value"
+                    }
                   ]
                 }
               ]
@@ -805,12 +1357,24 @@
         },
         "options": {
           "showHeader": true,
-          "sortBy": [{ "displayName": "TimeGenerated", "desc": true }],
-          "footer": { "show": true, "reducer": ["count"], "fields": ["Src"] }
+          "sortBy": [
+            {
+              "displayName": "TimeGenerated",
+              "desc": true
+            }
+          ],
+          "footer": {
+            "show": true,
+            "reducer": [
+              "count"
+            ],
+            "fields": [
+              "Src"
+            ]
+          }
         }
       }
     ]
   },
   "overwrite": true
 }
-
