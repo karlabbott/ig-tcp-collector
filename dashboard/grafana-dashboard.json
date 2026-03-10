@@ -30,7 +30,7 @@
           "definition": "",
           "hide": 0,
           "includeAll": true,
-          "multi": false,
+          "multi": true,
           "name": "VM",
           "options": [],
           "query": {
@@ -48,8 +48,7 @@
           "skipUrlSync": false,
           "sort": 1,
           "type": "query",
-          "label": "Virtual Machine",
-          "allValue": "*"
+          "label": "Virtual Machine"
         }
       ]
     },
@@ -101,7 +100,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -168,7 +167,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize DropsPerMin=count() / (datetime_diff('minute', max(TimeGenerated), min(TimeGenerated)) + 1)",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize DropsPerMin=count() / (datetime_diff('minute', max(TimeGenerated), min(TimeGenerated)) + 1)",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -236,7 +235,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Reasons=dcount(Reason)",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Reasons=dcount(Reason)",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -295,7 +294,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Processes=dcount(Comm)",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Processes=dcount(Comm)",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -354,7 +353,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Drops=count() by bin(TimeGenerated, $__interval), Reason\n| order by TimeGenerated asc",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Drops=count() by bin(TimeGenerated, $__interval), Reason\n| order by TimeGenerated asc",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -427,7 +426,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by Reason\n| order by Count desc\n| take 10",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by Reason\n| order by Count desc\n| take 10",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -482,7 +481,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by State\n| order by Count desc",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by State\n| order by Count desc",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -537,7 +536,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend SrcIP = extract(@'^([^:]+)', 1, Src)\n| summarize Drops=count() by SrcIP\n| order by Drops desc\n| take 10",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend SrcIP = extract(@'^([^:]+)', 1, Src)\n| summarize Drops=count() by SrcIP\n| order by Drops desc\n| take 10",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -598,7 +597,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Drops=count() by DstIP\n| order by Drops desc\n| take 10",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Drops=count() by DstIP\n| order by Drops desc\n| take 10",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -659,7 +658,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcpDrop_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, Src, Dst, Comm, Pid, State, TcpFlags, Reason\n| order by TimeGenerated desc\n| take 100",
+              "query": "TraceTcpDrop_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, Src, Dst, Comm, Pid, State, TcpFlags, Reason\n| order by TimeGenerated desc\n| take 100",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -747,7 +746,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count()",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -806,7 +805,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Count=count()",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Count=count()",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -865,7 +864,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'accept'\n| summarize Count=count()",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'accept'\n| summarize Count=count()",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -924,7 +923,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'close'\n| summarize Count=count()",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'close'\n| summarize Count=count()",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -983,7 +982,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Events=count() by bin(TimeGenerated, $__interval), TcpEventType\n| order by TimeGenerated asc",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Events=count() by bin(TimeGenerated, $__interval), TcpEventType\n| order by TimeGenerated asc",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -1057,7 +1056,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by TcpEventType\n| order by Count desc",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| summarize Count=count() by TcpEventType\n| order by Count desc",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -1112,7 +1111,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Connections=count() by Comm\n| order by Connections desc\n| take 10",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| summarize Connections=count() by Comm\n| order by Connections desc\n| take 10",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -1169,7 +1168,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Connections=count() by DstIP\n| order by Connections desc\n| take 10",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstIP = extract(@'^([^:]+)', 1, Dst)\n| summarize Connections=count() by DstIP\n| order by Connections desc\n| take 10",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -1226,7 +1225,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstPort = extract(@':([0-9]+)$', 1, Dst)\n| summarize Connections=count() by DstPort\n| order by Connections desc\n| take 10",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| where TcpEventType == 'connect'\n| extend DstPort = extract(@':([0-9]+)$', 1, Dst)\n| summarize Connections=count() by DstPort\n| order by Connections desc\n| take 10",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
@@ -1283,7 +1282,7 @@
             "refId": "A",
             "queryType": "Azure Log Analytics",
             "azureLogAnalytics": {
-              "query": "TraceTcp_CL\n| where '${VM}' == '*' or _ResourceId =~ '${VM}'\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, TcpEventType, Src, Dst, Comm, Pid, Uid\n| order by TimeGenerated desc\n| take 100",
+              "query": "TraceTcp_CL\n| where _ResourceId in~ (${VM:singlequote})\n| where $__timeFilter(TimeGenerated)\n__HOST_FILTER__\n| project TimeGenerated, TcpEventType, Src, Dst, Comm, Pid, Uid\n| order by TimeGenerated desc\n| take 100",
               "resources": [
                 "__LAW_RESOURCE_ID__"
               ]
